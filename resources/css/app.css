@@ -1,0 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=fallback');
+@import url('https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap');
+@import "@fortawesome/fontawesome-free/css/all.css";
+@import 'tom-select/dist/css/tom-select.default.css';
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+
+@import 'additional-styles/utility-patterns.css';
+@import 'additional-styles/flatpickr.css';
+
+@import 'tailwindcss/utilities';
+
+[x-cloak=""] {
+	display: none;
+}
+
+@layer base {
+	.theme-enfant {
+		--primary: theme(colors.orange.500);
+		--primary-hover: theme(colors.orange.600);
+		--color-fill-navbar: theme(colors.orange.400);
+		--color-fill-sidebar: theme(colors.orange.200);
+		--color-fill-background: theme(colors.orange.100);
+		--color-fill-navbar-dark: theme(colors.amber.900);
+		--color-fill-sidebar-dark: theme(colors.amber.950);
+		--color-fill-background-dark: theme(colors.orange.950);
+		--font-family: theme(fontFamily.comic);
+		--background-image: url('../../public/images/themes/cohete.png');
+	}
+
+	.theme-jeune {
+		--primary: theme(colors.teal.600);
+		--primary-hover: theme(colors.teal.700);
+		--color-fill-navbar: theme(colors.teal.400);
+		--color-fill-sidebar: theme(colors.teal.200);
+		--color-fill-background: theme(colors.emerald.50);
+		--color-fill-navbar-dark: theme(colors.teal.800);
+		--color-fill-sidebar-dark: theme(colors.teal.900);
+		--color-fill-background-dark: theme(colors.teal.950);
+		--font-family: theme(fontFamily.inter);
+		--background-image: url('../../public/images/themes/arco2.png');
+	}
+
+	.theme-adult {
+		--primary: theme(colors.sky.500);
+		--primary-hover: theme(colors.sky.600);
+		--color-fill-navbar: theme(colors.sky.700);
+		--color-fill-sidebar: theme(colors.sky.200);
+		--color-fill-background: theme(colors.sky.100);
+		--color-fill-navbar-dark: theme(colors.sky.900);
+		--color-fill-sidebar-dark: theme(colors.cyan.950);
+		--color-fill-background-dark: theme(colors.sky.950);
+		--font-family: theme(fontFamily.mono);
+		--background-image: url('/public/images/themes/square.png');
+	}
+
+	.theme-adult .dark {
+		--primary: theme(colors.sky.900);
+		--primary-hover: theme(colors.sky.600);
+		--color-fill-navbar: theme(colors.black);
+		--color-fill-sidebar: theme(colors.sky.200);
+		--color-fill-background: theme(colors.sky.100);
+		--color-fill-navbar-dark: theme(colors.sky.900);
+		--color-fill-sidebar-dark: theme(colors.cyan.950);
+		--color-fill-background-dark: theme(colors.sky.950);
+		--font-family: theme(fontFamily.mono)
+	}
+}
+
+#preloader {
+    z-index: 1000;
+    background-color: rgb(255, 255, 255, 0.9);
+}
+
+.preloader-transition {
+    transition: opacity 0.1s ease-in-out;
+}
+
+.featured-post-image {
+	display: block;
+	height: 240px;
+	width: 100%;
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.post-header-image {
+	display: block;
+	height: 320px;
+	width: 100%;
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+
+
