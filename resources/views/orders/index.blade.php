@@ -15,6 +15,7 @@
                 </div>
             </section>
 
+            @livewire('order-payments')
             @livewire('order-details')
         </div>
     </div>

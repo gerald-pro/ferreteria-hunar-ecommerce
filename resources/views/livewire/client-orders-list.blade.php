@@ -4,10 +4,10 @@
             <x-input wire:model.live.debounce.400ms="search" type="text" placeholder="Buscar pedidos..."
                 class="w-48" />
 
-            <x-select wire:model.live="paymentStatus" class="w-30">
+            <x-select wire:model.live="filterStatus" class="w-30">
                 <option value="">Todos</option>
-                <option value="PAGADO">Pagado</option>
                 <option value="PENDIENTE">Pendiente</option>
+                <option value="COMPLETADO">Completado</option>
                 <option value="CANCELADO">Cancelado</option>
             </x-select>
 

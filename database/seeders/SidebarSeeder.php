@@ -39,10 +39,11 @@ class SidebarSeeder extends Seeder
         $myOrdersPage = Page::create(['route' => '/my-orders']);
         $paymentsPage = Page::create(['route' => '/payments']);
         $myPaymentsPage = Page::create(['route' => '/my-payments']);
-        $contactPage = Page::create(['route' => '/contact']);
-        $contactMessagesPage = Page::create(['route' => '/contact-messages']);
+        //$contactPage = Page::create(['route' => '/contact']);
+        //$contactMessagesPage = Page::create(['route' => '/contact-messages']);
         $categoriesPage = Page::create(['route' => '/categories']);
         $productsPage = Page::create(['route' => '/products']);
+        $inventoryPage = Page::create(['route' => '/inventory']);
         $promotionsPage = Page::create(['route' => '/promotions']);
         $usersPage = Page::create(['route' => '/users']);
         $rolesPage = Page::create(['route' => '/roles']);
@@ -80,12 +81,12 @@ class SidebarSeeder extends Seeder
         ]);
         $newItem->save();
 
-        $newItem = new SidebarItem([
+        /* $newItem = new SidebarItem([
             'name' => 'Contacto',
             'page_id' => $contactPage->id,
             'icon' => 'fa-phone',
         ]);
-        $newItem->save();
+        $newItem->save(); */
 
         $newItem = new SidebarItem([
             'name' => 'Usuarios',
@@ -101,12 +102,12 @@ class SidebarSeeder extends Seeder
         ]);
         $adminGroup->items()->save($newItem);
 
-        $newItem = new SidebarItem([
+        /* $newItem = new SidebarItem([
             'name' => 'Mensajes de contacto',
             'page_id' => $contactMessagesPage->id,
             'permission' => 'contact.index',
         ]);
-        $adminGroup->items()->save($newItem);
+        $adminGroup->items()->save($newItem); */
 
         $newItem = new SidebarItem([
             'name' => 'Pedidos',
@@ -129,7 +130,15 @@ class SidebarSeeder extends Seeder
             'permission' => 'product.index',
         ]);
         $storeGroup->items()->save($newItem);
- 
+
+         
+        $newItem = new SidebarItem([
+            'name' => 'Inventario',
+            'page_id' => $inventoryPage->id,
+            'permission' => 'inventory.index',
+        ]);
+        $storeGroup->items()->save($newItem);
+
         $newItem = new SidebarItem([
             'name' => 'Promociones',
             'page_id' => $promotionsPage->id,

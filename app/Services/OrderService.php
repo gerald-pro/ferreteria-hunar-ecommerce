@@ -15,26 +15,36 @@ class OrderService
         }
 
         return DB::transaction(function () use ($order) {
+            // Marcar el pedido como completado
             $order->delivery_status = 'COMPLETADO';
             $order->save();
 
+            // Manejar los pagos según el método de pago
             if ($order->payment_method === 'ELECTRONICO') {
-                $payment = $order->payment;
-                if ($payment && $payment->status !== 'PAGADO') {
-                    $payment->status = 'PAGADO';
-                    $payment->save();
+                $payments = $order->payments;
+                if ($payments) {
+                    foreach ($payments as $payment) {
+                        if ($payment->status !== 'PAGADO') {
+                            $payment->status = 'PAGADO';
+                            $payment->save();
+                        }
+                    }
                 }
-            } else if ($order->payment_method === 'CONTRA_ENTREGA') {
-                if (!$order->payment) {
+            } elseif ($order->payment_method === 'CONTRA_ENTREGA') {
+                if ($order->payments->isEmpty()) {
+                    // Crear un pago si no hay ninguno
                     Payment::create([
                         'order_id' => $order->id,
-                        'total_amount' => $order->total_amount,
+                        'paid_amount' => $order->total_amount,
                         'status' => 'PAGADO',
                         'transaction_id' => 'CONTRA_ENTREGA-' . $order->id,
                     ]);
                 } else {
-                    $order->payment->status = 'PAGADO';
-                    $order->payment->save();
+                    // Marcar todos los pagos existentes como pagados
+                    foreach ($order->payments as $payment) {
+                        $payment->status = 'PAGADO';
+                        $payment->save();
+                    }
                 }
             }
 
@@ -49,13 +59,19 @@ class OrderService
         }
 
         return DB::transaction(function () use ($order) {
+            // Marcar el pedido como cancelado
             $order->delivery_status = 'CANCELADO';
             $order->save();
 
-            $payment = $order->payment;
-            if ($payment && $payment->status !== 'CANCELADO') {
-                $payment->status = 'CANCELADO';
-                $payment->save();
+            // Cancelar todos los pagos asociados al pedido
+            $payments = $order->payments;
+            if ($payments) {
+                foreach ($payments as $payment) {
+                    if ($payment->status !== 'CANCELADO') {
+                        $payment->status = 'CANCELADO';
+                        $payment->save();
+                    }
+                }
             }
 
             return $order;

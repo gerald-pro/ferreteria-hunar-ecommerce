@@ -26,7 +26,7 @@ Route::get('products/{product}', [ProductController::class, 'show'])->name('prod
 
 Route::get('inventory', function () {
     return view('administration/inventory');
-})->name('home');
+})->name('home')->middleware('can:inventory.index');;
 
 
 Route::get('contact', [ContactController::class, 'form'])->name('contact.form');

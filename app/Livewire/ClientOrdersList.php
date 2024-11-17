@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Order;
 use App\Services\PaymentService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -19,7 +20,7 @@ class ClientOrdersList extends Component
     public $qrImage;
     public $showQrModal = false;
     public $showPaymentModal = false;
-    public $paymentStatus = '';
+    public $filterStatus = '';
     public $currentOrderId;
     public $paymentAmount;
     public $maxPaymentAmount = 0;
@@ -63,13 +64,10 @@ class ClientOrdersList extends Component
             })
             ->where(function ($query) {
                 $query->where('id', 'like', '%' . $this->search . '%')
-                    ->orWhere('total_amount', 'like', '%' . $this->search . '%')
-                    ->orWhere('delivery_status', 'like', '%' . $this->search . '%');
+                    ->orWhere('total_amount', 'like', '%' . $this->search . '%');
             })
-            ->when($this->paymentStatus, function ($query) {
-                $query->whereHas('payment', function ($query) {
-                    $query->where('status', $this->paymentStatus);
-                });
+            ->when($this->filterStatus, function (Builder $query) {
+                $query->where('delivery_status', $this->filterStatus);
             })
             ->orderBy($this->sortField, $this->sortDirection)
             ->paginate(10);
