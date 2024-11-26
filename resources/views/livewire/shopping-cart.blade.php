@@ -58,13 +58,13 @@
             <p class="text-xl text-right mb-2">Total: Bs. <span x-text="total.toFixed(2)"></span></p>
             <x-spinner size=4 wire:loading />
             <form id="orderForm" onsubmit="event.preventDefault(); confirmOrder();">
-                <div class="mb-4">
+               {{--  <div class="mb-4">
                     <x-label for="paymentMethod" class="block mb-2">Método de pago:</x-label>
                     <x-select wire:model="paymentMethod" id="paymentMethod" class="w-full p-2 border rounded" required>
                         <option value="ELECTRONICO">Pago electrónico</option>
                         <option value="CONTRA_ENTREGA">Pago contra entrega</option>
                     </x-select>
-                </div>
+                </div> --}}
 
                 <div class="mb-4">
                     <x-label for="deliveryAddress" class="block mb-2">Dirección de entrega:</x-label>

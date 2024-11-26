@@ -8,111 +8,73 @@ use App\Services\OrderService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Livewire\Attributes\On;
+use Livewire\Component;
+use Livewire\WithPagination;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 use Rappasoft\LaravelLivewireTables\Views\Columns\DateColumn;
 use Rappasoft\LaravelLivewireTables\Views\Filters\DateFilter;
 use Rappasoft\LaravelLivewireTables\Views\Filters\SelectFilter;
 
-class OrdersTable extends DataTableComponent
+class OrdersTable extends Component
 {
-    public $showModal = false;
-    public $specificOrderId = null;
+    use WithPagination;
 
+    public $id;
+    public $search = '';
+    public $sortField = 'created_at';
+    public $sortDirection = 'desc';
+    public $filterStatus = '';
+
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingFilterStatus()
+    {
+        $this->resetPage();
+    }
+
+    public function sortBy($field)
+    {
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortDirection = 'asc';
+        }
+        $this->sortField = $field;
+    }
 
     public function mount(Request $request)
     {
         if ($request->has('order')) {
-            $this->specificOrderId = $request->order;
+            $this->id = $request->order;
         }
     }
 
-    public function configure(): void
+    public function render()
     {
-        $this->setPrimaryKey('id');
-        $this->setDefaultSort('created_at', 'desc');
-        $this->setSearchDebounce(1000);
+        $orders = Order::with('user')
+            ->when($this->id, function ($query) {
+                $query->where('id', '=', $this->id);
+            })
+            ->when($this->search, function (Builder $query) {
+                $query->where('id', 'like', "%{$this->search}%")
+                    ->orWhere('total_amount', 'like', "%{$this->search}%")
+                    ->orWhereHas('user', function (Builder $userQuery) {
+                        $userQuery->where('name', 'like', "%{$this->search}%");
+                    });
+            })
+            ->when($this->filterStatus, function (Builder $query) {
+                $query->where('delivery_status', $this->filterStatus);
+            })
+            ->orderBy($this->sortField, $this->sortDirection)
+            ->paginate(10);
 
-        $this->setTdAttributes(function (Column $column, $row, $columnIndex, $rowIndex) {
-            return [
-                'default' => false,
-                'class' => 'text-md',
-            ];
-        });
-    }
-
-    public array $bulkActions = [
-        'exportExcel' => 'Exportar Excel',
-        'exportPdf' => 'Exportar PDF',
-        'exportHtml' => 'Exportar HTML',
-    ];
-
-    public function columns(): array
-    {
-        return [
-            Column::make('ID', 'id')->searchable()->sortable(),
-            DateColumn::make('Fecha', 'created_at')
-                ->sortable()
-                ->outputFormat('d/m/y H:s'),
-
-            Column::make('Usuario', 'user.name')
-                ->sortable()
-                ->searchable(function ($builder, $term) {
-                    return $builder->orWhere('user.name', 'ILIKE', '%' . $term . '%');
-                }),
-
-            Column::make('Monto (Bs)', 'total_amount')->sortable()->footer(function ($rows) {
-                return 'Subtotal: ' . $rows->sum('total_amount');
-            }),
-
-            Column::make('Estado', 'delivery_status')->sortable(),
-            Column::make('Acciones')
-                ->label(
-                    fn ($row, Column $column) => view('components.tables.order-actions')->with([
-                        'order' => $row,
-                    ])
-                )->html(),
-        ];
-    }
-
-    public function filters(): array
-    {
-        return [
-            DateFilter::make('Fecha inicio')->filter(function (Builder $builder, string $value) {
-                $builder->where('orders.created_at', '>=', $value);
-            }),
-            DateFilter::make('Fecha final')->filter(function (Builder $builder, string $value) {
-                $builder->where('orders.created_at', '<=', $value);
-            }),
-
-            SelectFilter::make('Estado')
-                ->options([
-                    '' => 'Todos',
-                    'PENDIENTE' => 'Pendiente',
-                    'COMPLETADO' => 'Completado',
-                    'CANCELADO' => 'Cancelado',
-                ])
-                ->filter(function (Builder $builder, string $value) {
-                    if ($value !== '') {
-                        $builder->where('orders.delivery_status', $value);
-                    }
-                }),
-        ];
-    }
-
-    public function builder(): Builder
-    {
-        if (!empty($this->specificOrderId)) {
-            return Order::query()
-                ->where('orders.id', '=', $this->specificOrderId)
-                ->select('orders.*', 'users.name as user_name')
-                ->join('users', 'orders.user_id', '=', 'users.id')
-                ->orderBy('orders.created_at', 'desc');
-        } else {
-            return Order::query()
-                ->select('orders.*', 'users.name as user_name')
-                ->join('users', 'orders.user_id', '=', 'users.id');
-        }
+        return view('livewire.admin-orders-list', [
+            'orders' => $orders,
+        ]);
     }
 
     public function exportExcel()
@@ -146,7 +108,6 @@ class OrdersTable extends DataTableComponent
     }
 
     #[On('complete-order')]
-
     public function completeOrder($orderId)
     {
         try {

@@ -32,6 +32,10 @@ class DatabaseSeeder extends Seeder
         $sql = file_get_contents($path);
         DB::unprepared($sql);
 
+        $path = database_path('scripts/inventory.sql');
+        $sql = file_get_contents($path);
+        DB::unprepared($sql);
+
         $path = database_path('scripts/orders.sql');
         $sql = file_get_contents($path);
         DB::unprepared($sql);

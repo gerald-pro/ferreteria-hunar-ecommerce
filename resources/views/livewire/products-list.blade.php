@@ -88,7 +88,7 @@
                             </x-button>
                         @endcan
                         @can('product.delete')
-                            <x-button onclick="confirm({{ $product->id }})" class="bg-red-500 hover:bg-red-700">
+                            <x-button onclick="confirmDelete({{ $product->id }})" class="bg-red-500 hover:bg-red-700">
                                 <i class="fas fa-trash"></i>
                             </x-button>
                         @endcan

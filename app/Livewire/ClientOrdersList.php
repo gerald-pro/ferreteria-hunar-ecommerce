@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Order;
 use App\Services\PaymentService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -13,13 +14,14 @@ class ClientOrdersList extends Component
 {
     use WithPagination;
 
+    public $id;
     public $search = '';
     public $sortField = 'created_at';
     public $sortDirection = 'desc';
     public $qrImage;
     public $showQrModal = false;
     public $showPaymentModal = false;
-    public $paymentStatus = '';
+    public $filterStatus = '';
     public $currentOrderId;
     public $paymentAmount;
     public $maxPaymentAmount = 0;
@@ -51,25 +53,22 @@ class ClientOrdersList extends Component
     public function mount(Request $request)
     {
         if ($request->has('order')) {
-            $this->search = $request->order;
+            $this->id = $request->order;
         }
     }
 
     public function render()
     {
         $orders = Order::where('user_id', auth()->id())
-            ->when($this->search, function ($query) {
-                $query->where('id', '=', $this->search);
+            ->when($this->id, function ($query) {
+                $query->where('id', '=', $this->id);
             })
             ->where(function ($query) {
                 $query->where('id', 'like', '%' . $this->search . '%')
-                    ->orWhere('total_amount', 'like', '%' . $this->search . '%')
-                    ->orWhere('delivery_status', 'like', '%' . $this->search . '%');
+                    ->orWhere('total_amount', 'like', '%' . $this->search . '%');
             })
-            ->when($this->paymentStatus, function ($query) {
-                $query->whereHas('payment', function ($query) {
-                    $query->where('status', $this->paymentStatus);
-                });
+            ->when($this->filterStatus, function (Builder $query) {
+                $query->where('delivery_status', $this->filterStatus);
             })
             ->orderBy($this->sortField, $this->sortDirection)
             ->paginate(10);

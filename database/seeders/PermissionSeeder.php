@@ -42,7 +42,8 @@ class PermissionSeeder extends Seeder
             'sidebar.delete',
             'searcher',
             'inventory.index',
-            'inventory.create'
+            'inventory.create',
+            'debtor.index'
         ];
 
         foreach ($permissions as $permission) {
@@ -80,7 +81,8 @@ class PermissionSeeder extends Seeder
                 'sidebar.delete',
                 'searcher',
                 'inventory.index',
-                'inventory.create'
+                'inventory.create',
+                'debtor.index'
             ],
             'asistente de gerencia' => [
                 'user.index',

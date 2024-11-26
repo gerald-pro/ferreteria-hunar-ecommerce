@@ -16,7 +16,7 @@ class ShoppingCart extends Component
     public $total;
     public $content;
     public $lastSale = [];
-    public $paymentMethod = 'ELECTRONICO';
+    //public $paymentMethod = 'ELECTRONICO';
     public $deliveryAddress = '';
     public $billingName = '';
     public $billingId = '';
@@ -89,7 +89,8 @@ class ShoppingCart extends Component
             'user_id' => $user->id,
             'total_amount' => $this->total,
             'delivery_address' => $this->deliveryAddress,
-            'payment_method' => $this->paymentMethod,
+            //'payment_method' => $this->paymentMethod,
+            'payment_method' => 'ELECTRONICO',
             'billing_name' => $this->billingName,
             'billing_id' => $this->billingId,
             'delivery_status' => 'PENDIENTE',
@@ -105,7 +106,7 @@ class ShoppingCart extends Component
             ]);
         }
 
-        if ($this->paymentMethod === 'ELECTRONICO') {
+        /* if ($this->paymentMethod === 'ELECTRONICO') {
 
             $paymentResult = PaymentService::processPayment($order->id);
 
@@ -118,7 +119,7 @@ class ShoppingCart extends Component
                 $order->delete();
                 return;
             }
-        }
+        } */
 
         Cart::clear();
         return redirect()->route('customer.orders')->with('success', 'Pedido creado correctamente');
