@@ -20,7 +20,7 @@ class OrderService
             $order->save();
 
             // Manejar los pagos según el método de pago
-            if ($order->payment_method === 'ELECTRONICO') {
+            /* if ($order->payment_method === 'ELECTRONICO') {
                 $payments = $order->payments;
                 if ($payments) {
                     foreach ($payments as $payment) {
@@ -46,7 +46,7 @@ class OrderService
                         $payment->save();
                     }
                 }
-            }
+            } */
 
             return $order;
         });

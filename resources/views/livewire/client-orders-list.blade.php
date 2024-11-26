@@ -83,8 +83,8 @@
             @foreach ($orders as $order)
                 <tr>
                     <td class="border border-light px-4 py-2">{{ $order->id }}</td>
-                    <td class="border border-light px-4 py-2">{{ $order->created_at->format('d/m/Y H:m') }}</td>
-                    <td class="border border-light px-4 py-2">
+                    <td class="border border-light px-4 py-2">{{ $order->created_at->format('d/m/Y H:i') }}</td>
+                    <td class="border border-light px-4 py-2 text-center">
                         @php
                             $totalPaid = $order->payments()->where('status', 'PAGADO')->sum('paid_amount');
                         @endphp
@@ -98,7 +98,12 @@
                     <td class="border border-light px-4 py-2">
                         {{ number_format($totalPaid, 2) }} Bs
                     </td>
-                    <td class="border border-light px-4 py-2">{{ $order->delivery_status }}</td>
+                    <td class="border border-light px-4 py-2 text-center">
+                        @if ($order->delivery_status == 'COMPLETADO')
+                            <span class="text-green-600 font-semibold">{{ $order->delivery_status }}</span>
+                        @else
+                            <span class="text-yellow-600 font-semibold">{{ $order->delivery_status }}</span>
+                        @endif
                     <td class="border border-light px-4 py-2">
                         <x-button-secondary
                             wire:click="dispatch('show-order-details', { orderId: {{ $order->id }} })"
@@ -112,10 +117,11 @@
                             <i class="fas fa-file-invoice   fa-fw"></i>
                         </x-button-secondary>
 
-                        @if ($order->delivery_status === 'PENDIENTE' && $totalPaid < $order->total_amount)
+                        @if ($totalPaid < $order->total_amount)
                             <x-button wire:click="showPayment({{ $order->id }})" wire:loading.attr='disabled'
                                 wire:target="showPayment({{ $order->id }})">
-                                <x-spinner wire:loading wire:target="showPayment({{ $order->id }})" size="3" />
+                                <x-spinner wire:loading wire:target="showPayment({{ $order->id }})"
+                                    size="3" />
                                 <i wire:loading.remove wire:target="showPayment({{ $order->id }})"
                                     class="fas fa-credit-card fa-fw">
                                 </i>

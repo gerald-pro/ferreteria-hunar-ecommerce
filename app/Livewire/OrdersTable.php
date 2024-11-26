@@ -20,6 +20,7 @@ class OrdersTable extends Component
 {
     use WithPagination;
 
+    public $id;
     public $search = '';
     public $sortField = 'created_at';
     public $sortDirection = 'desc';
@@ -45,9 +46,19 @@ class OrdersTable extends Component
         $this->sortField = $field;
     }
 
+    public function mount(Request $request)
+    {
+        if ($request->has('order')) {
+            $this->id = $request->order;
+        }
+    }
+
     public function render()
     {
         $orders = Order::with('user')
+            ->when($this->id, function ($query) {
+                $query->where('id', '=', $this->id);
+            })
             ->when($this->search, function (Builder $query) {
                 $query->where('id', 'like', "%{$this->search}%")
                     ->orWhere('total_amount', 'like', "%{$this->search}%")

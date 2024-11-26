@@ -20,7 +20,8 @@
 
                         <div> <livewire:charts.sales-by-category-chart /></div>
 
-                        <div><livewire:charts.payment-method-distribution-chart /></div>
+                        <div><livewire:charts.low-stock-products-chart /></div>
+                        {{-- <div><livewire:charts.payment-method-distribution-chart /></div> --}}
                     </div>
                 </div>
             </section>

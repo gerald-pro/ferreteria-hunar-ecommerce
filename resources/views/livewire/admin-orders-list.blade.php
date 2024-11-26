@@ -58,7 +58,7 @@
                 <th class="border border-gray-300 px-4 py-2">
                     Monto Pagado
                 </th>
-                <th class="border border-gray-300 px-4 py-2">Estado</th>
+                <th class="border border-gray-300 px-4 py-2">Entrega</th>
                 <th class="border border-gray-300 px-4 py-2">Acciones</th>
             </tr>
         </thead>

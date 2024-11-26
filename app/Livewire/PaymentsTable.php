@@ -5,154 +5,127 @@ namespace App\Livewire;
 use App\Exports\PaymentsExport;
 use App\Models\Payment;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
 use Livewire\Attributes\On;
-use Rappasoft\LaravelLivewireTables\DataTableComponent;
-use Rappasoft\LaravelLivewireTables\Views\Column;
-use Rappasoft\LaravelLivewireTables\Views\Columns\DateColumn;
-use Rappasoft\LaravelLivewireTables\Views\Filters\DateFilter;
-use Rappasoft\LaravelLivewireTables\Views\Filters\SelectFilter;
+use Livewire\Component;
+use Livewire\WithPagination;
 
-class PaymentsTable extends DataTableComponent
+class PaymentsTable extends Component
 {
-    public $showModal = false;
-    public $selectedPayment;
+    use WithPagination;
+
+    public $search = '';
+    public $sortField = 'created_at';
+    public $sortDirection = 'desc';
+    public $filterStatus = '';
+    public $startDate = '';
+    public $endDate = '';
     public $specificPaymentId = null;
 
-    public function mount(Request $request)
+    public function mount($paymentId = null)
     {
-        
-        if ($request->has('payment')) {
-            $this->specificPaymentId = $request->payment;
-        }
+        $this->specificPaymentId = $paymentId;
     }
 
-    public function builder(): Builder
+    public function updatingSearch()
     {
-        if (!empty($this->specificPaymentId)) {
-            return Payment::query()
-                ->where('payments.id', '=', $this->specificPaymentId)
-                ->select('payments.*', 'users.name as user_name')
-                ->join('orders', 'orders.id', '=', 'payments.order_id')
-                ->join('users', 'orders.user_id', '=', 'users.id')
-                ->orderBy('payments.created_at', 'desc');
+        $this->resetPage();
+    }
+
+    public function updatingFilterStatus()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingStartDate()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingEndDate()
+    {
+        $this->resetPage();
+    }
+
+    public function sortBy($field)
+    {
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
         } else {
-            return Payment::query()
-                ->select('payments.*', 'users.name as user_name')
-                ->join('orders', 'orders.id', '=', 'payments.order_id')
-                ->join('users', 'orders.user_id', '=', 'users.id');
+            $this->sortDirection = 'asc';
         }
+        $this->sortField = $field;
     }
 
-
-    public function configure(): void
+    public function render()
     {
-        $this->setPrimaryKey('id');
-        $this->setDefaultSort('created_at', 'desc');
-        $this->setSearchDebounce(1000);
+        $payments = Payment::query()
+            ->select('payments.*', 'users.name as user_name')
+            ->join('orders', 'orders.id', '=', 'payments.order_id')
+            ->join('users', 'orders.user_id', '=', 'users.id')
+            ->when($this->specificPaymentId, function ($query) {
+                $query->where('payments.id', '=', $this->specificPaymentId);
+            })
+            ->when($this->search, function (Builder $query) {
+                $query->where(function ($query) {
+                    $query->where('payments.id', 'like', "%{$this->search}%")
+                        ->orWhere('payments.paid_amount', 'like', "%{$this->search}%")
+                        ->orWhere('users.name', 'ilike', "%{$this->search}%");
+                });
+            })
+            ->when($this->filterStatus, function (Builder $query) {
+                $query->where('payments.status', $this->filterStatus);
+            })
+            ->when($this->startDate, function (Builder $query) {
+                $query->whereDate('payments.created_at', '>=', $this->startDate);
+            })
+            ->when($this->endDate, function (Builder $query) {
+                $query->whereDate('payments.created_at', '<=', $this->endDate);
+            })
+            ->orderBy($this->sortField, $this->sortDirection)
+            ->paginate(10);
 
-        $this->setTdAttributes(function (Column $column, $row, $columnIndex, $rowIndex) {
-            return [
-                'default' => false,
-                'class' => 'text-md',
-            ];
-        });
-    }
-
-    public array $bulkActions = [
-        'exportExcel' => 'Exportar Excel',
-        'exportPdf' => 'Exportar PDF',
-        'exportHtml' => 'Exportar HTML',
-    ];
-
-    public function columns(): array
-    {
-        return [
-            Column::make('ID', 'id')->searchable()->sortable()
-                ->attributes(function ($row) {
-                    return [
-                        'class' => 'text-lg',
-                        'default' => true,
-                    ];
-                }),
-
-                DateColumn::make('Fecha', 'created_at')
-                ->sortable()
-                ->outputFormat('d/m/y H:s'),
-
-            Column::make('Usuario', 'order.user.name')
-                ->sortable()
-                ->searchable(function ($builder, $term) {
-                    return $builder->orWhereHas('order.user', function ($query) use ($term) {
-                        $query->where('name', 'ILIKE', '%' . $term . '%');
-                    });
-                }),
-
-            Column::make('Monto (Bs)', 'paid_amount')->sortable()->footer(function ($rows) {
-                return 'Subtotal: ' . $rows->sum('paid_amount');
-            }),
-            Column::make('Estado', 'status')->sortable(),
-            Column::make('Acciones')
-                ->label(
-                    fn ($row, Column $column) => view('components.tables.payment-actions')->with([
-                        'payment' => $row,
-                    ])
-                )->html(),
-        ];
-    }
-
-    public function filters(): array
-    {
-        return [
-            DateFilter::make('Fecha inicio')->filter(function (Builder $builder, string $value) {
-                $builder->where('payments.created_at', '>=', $value);
-            }),
-            DateFilter::make('Fecha final')->filter(function (Builder $builder, string $value) {
-                $builder->where('payments.created_at', '<=', $value);
-            }),
-
-            SelectFilter::make('Estado')
-                ->options([
-                    '' => 'Todos',
-                    'PENDIENTE' => 'Pendiente',
-                    'PAGADO' => 'Pagado',
-                    'CANCELADO' => 'Cancelado',
-                ])
-                ->filter(function (Builder $builder, string $value) {
-                    if ($value !== '') {
-                        $builder->where('payments.status', $value);
-                    }
-                }),
-        ];
+        return view('livewire.admin-payments-list', [
+            'payments' => $payments,
+        ]);
     }
 
     public function exportExcel()
     {
-        $payments = $this->getSelected();
-
-        $this->clearSelected();
-        return (new PaymentsExport($payments))->download('reporte_pagos.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+        return (new PaymentsExport($this->getSelectedPayments()))->download('reporte_pagos.xlsx', \Maatwebsite\Excel\Excel::XLSX);
     }
 
     public function exportPdf()
     {
-        $payments = $this->getSelected();
-
-        $this->clearSelected();
-        return (new PaymentsExport($payments))->download('reporte_pagos.pdf', \Maatwebsite\Excel\Excel::DOMPDF);
+        return (new PaymentsExport($this->getSelectedPayments()))->download('reporte_pagos.pdf', \Maatwebsite\Excel\Excel::DOMPDF);
     }
 
     public function exportHtml()
     {
-        $payments = $this->getSelected();
-
-        $this->clearSelected();
-        return (new PaymentsExport($payments))->download('reporte_pagos.html', \Maatwebsite\Excel\Excel::HTML);
+        return (new PaymentsExport($this->getSelectedPayments()))->download('reporte_pagos.html', \Maatwebsite\Excel\Excel::HTML);
     }
 
-    #[On('show-details')]
-    public function showPaymentModal($paymentId)
+    protected function getSelectedPayments()
     {
-        $this->dispatch('show-payment-details', $paymentId);
+        return Payment::query()
+            ->select('payments.*', 'users.name as user_name')
+            ->join('orders', 'orders.id', '=', 'payments.order_id')
+            ->join('users', 'orders.user_id', '=', 'users.id')
+            ->when($this->search, function (Builder $query) {
+                $query->where(function ($query) {
+                    $query->where('payments.id', 'like', "%{$this->search}%")
+                        ->orWhere('payments.paid_amount', 'like', "%{$this->search}%")
+                        ->orWhere('users.name', 'ilike', "%{$this->search}%");
+                });
+            })
+            ->when($this->filterStatus, function (Builder $query) {
+                $query->where('payments.status', $this->filterStatus);
+            })
+            ->when($this->startDate, function (Builder $query) {
+                $query->whereDate('payments.created_at', '>=', $this->startDate);
+            })
+            ->when($this->endDate, function (Builder $query) {
+                $query->whereDate('payments.created_at', '<=', $this->endDate);
+            })
+            ->get();
     }
 }

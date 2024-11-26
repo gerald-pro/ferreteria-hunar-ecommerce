@@ -47,6 +47,7 @@ class SidebarSeeder extends Seeder
         $promotionsPage = Page::create(['route' => '/promotions']);
         $usersPage = Page::create(['route' => '/users']);
         $rolesPage = Page::create(['route' => '/roles']);
+        $debtorsPage = Page::create(['route' => '/debtors']);
         $pagesPage = Page::create(['route' => '/pages']);
         $sidebarPage = Page::create(['route' => '/sidebar']);
         $statisticsPage = Page::create(['route' => '/statistics']);
@@ -92,6 +93,13 @@ class SidebarSeeder extends Seeder
             'name' => 'Usuarios',
             'page_id' => $usersPage->id,
             'permission' => 'user.index',
+        ]);
+        $adminGroup->items()->save($newItem);
+
+        $newItem = new SidebarItem([
+            'name' => 'Deudores',
+            'page_id' => $debtorsPage->id,
+            'permission' => 'debtor.index',
         ]);
         $adminGroup->items()->save($newItem);
 

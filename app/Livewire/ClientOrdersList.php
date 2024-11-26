@@ -14,6 +14,7 @@ class ClientOrdersList extends Component
 {
     use WithPagination;
 
+    public $id;
     public $search = '';
     public $sortField = 'created_at';
     public $sortDirection = 'desc';
@@ -52,15 +53,15 @@ class ClientOrdersList extends Component
     public function mount(Request $request)
     {
         if ($request->has('order')) {
-            $this->search = $request->order;
+            $this->id = $request->order;
         }
     }
 
     public function render()
     {
         $orders = Order::where('user_id', auth()->id())
-            ->when($this->search, function ($query) {
-                $query->where('id', '=', $this->search);
+            ->when($this->id, function ($query) {
+                $query->where('id', '=', $this->id);
             })
             ->where(function ($query) {
                 $query->where('id', 'like', '%' . $this->search . '%')

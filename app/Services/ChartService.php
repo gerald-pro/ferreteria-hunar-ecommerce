@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Order;
 use App\Models\Category;
 use App\Models\OrderItem;
+use App\Models\Product;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -141,5 +142,23 @@ class ChartService
             'year' => Carbon::now()->subYear(),
             default => Carbon::now()->subWeek(),
         };
+    }
+
+    public function getProductsWithLowStock($limit = 5, $threshold = null)
+    {
+        $defaultStock = 20;
+        $threshold = $threshold ?? ($defaultStock * 0.2);
+
+        $query = Product::select('products.id', 'products.name', 'products.stock')
+            ->orderBy('products.stock', 'asc')
+            ->limit($limit);
+
+        return $query->get()
+            ->map(function ($product) {
+                return [
+                    'x' => $product->name,
+                    'y' => $product->stock,
+                ];
+            });
     }
 }
