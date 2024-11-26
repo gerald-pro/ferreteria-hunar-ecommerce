@@ -84,22 +84,7 @@ class PermissionSeeder extends Seeder
                 'inventory.create',
                 'debtor.index'
             ],
-            'asistente de gerencia' => [
-                'user.index',
-                'category.index',
-                'category.create',
-                'category.edit',
-                'category.delete',
-                'product.create',
-                'product.edit',
-                'page.index',
-                'sidebar.index',
-                'sidebar.create',
-                'sidebar.edit',
-                'sidebar.delete',
-                'searcher',
-            ],
-            'jefe de inventario' => [
+            'proveedor' => [
                 'product.index',
                 'order.index',
                 'order.edit',

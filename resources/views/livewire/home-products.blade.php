@@ -4,7 +4,7 @@
         <div class="border border-light rounded px-4 py-2 mt-8 bg-gray-50 dark:bg-gray-800">
             <div class="mb-4">
                 <x-label for="product.search" value="Producto" />
-                <x-input class="block w-full" id="product.search" type="text" wire:model.live.debounce.300ms="search" wire:loading.attr='disabled'
+                <x-input class="block w-full" id="product.search" type="text" wire:model.live.debounce.600ms="search" wire:loading.attr='disabled'
                     placeholder="Buscar productos..." />
             </div>
 
@@ -22,7 +22,7 @@
                 <x-label for="product.min" value="Precio mínimo (Bs)"  />
 
                 <div x-data="{ currentVal: 0 }" class="flex w-full items-center gap-4 text-slate-700 dark:text-slate-300">
-                    <input wire:model.live.debounce.400ms="minPrice" x-model="currentVal" id="rangeSlider"
+                    <input wire:model.live.debounce.600ms="minPrice" x-model="currentVal" id="rangeSlider"
                         type="range" wire:loading.attr='disabled'
                         class="h-2 w-full appearance-none bg-slate-300 focus:outline-blue-700 dark:bg-slate-600 dark:focus:outline-blue-600 disabled:bg-slate-200 dark:disabled:bg-slate-700 [&::-moz-range-thumb]:size-4 [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:border-none [&::-moz-range-thumb]:bg-blue-700 active:[&::-moz-range-thumb]:scale-110 [&::-moz-range-thumb]:dark:bg-blue-600 [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:border-none [&::-webkit-slider-thumb]:bg-blue-700 active:[&::-webkit-slider-thumb]:scale-110 [&::-webkit-slider-thumb]:dark:bg-blue-600 [&::-moz-range-thumb]:rounded-full [&::-webkit-slider-thumb]:rounded-full rounded-full"
                         min="0" max="500" step="50" />
@@ -33,7 +33,7 @@
             <div class="mb-4">
                 <x-label for="product.max" value="Precio máximo (Bs)" />
                 <div x-data="{ currentVal: 1000 }" class="flex w-full items-center gap-4 text-slate-700 dark:text-slate-300">
-                    <input x-model="currentVal" wire:model.live.debounce.500ms="maxPrice" id="rangeSlider" type="range"
+                    <input x-model="currentVal" wire:model.live.debounce.600ms="maxPrice" id="rangeSlider" type="range"
                         class="h-2 w-full appearance-none bg-slate-300 focus:outline-blue-700 dark:bg-slate-600 dark:focus:outline-blue-600 disabled:bg-slate-200 dark:disabled:bg-slate-700  [&::-moz-range-thumb]:size-4 [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:border-none [&::-moz-range-thumb]:bg-blue-700 active:[&::-moz-range-thumb]:scale-110 [&::-moz-range-thumb]:dark:bg-blue-600 [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:border-none [&::-webkit-slider-thumb]:bg-blue-700 active:[&::-webkit-slider-thumb]:scale-110 [&::-webkit-slider-thumb]:dark:bg-blue-600 [&::-moz-range-thumb]:rounded-full [&::-webkit-slider-thumb]:rounded-full rounded-full"
                         min="0" max="1000" step="50" wire:loading.attr='disabled'/>
                     <span class="w-10 text-md font-bold text-black dark:text-white" x-text="currentVal"></span>
