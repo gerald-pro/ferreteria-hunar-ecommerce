@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Exports\PaymentsExport;
 use App\Models\Payment;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -19,12 +20,15 @@ class PaymentsTable extends Component
     public $filterStatus = '';
     public $startDate = '';
     public $endDate = '';
-    public $specificPaymentId = null;
+    public $paymentId = null;
 
-    public function mount($paymentId = null)
+    public function mount(Request $request)
     {
-        $this->specificPaymentId = $paymentId;
+        if ($request->has('payment')) {
+            $this->paymentId = $request->payment;
+        }
     }
+
 
     public function updatingSearch()
     {
@@ -62,8 +66,8 @@ class PaymentsTable extends Component
             ->select('payments.*', 'users.name as user_name')
             ->join('orders', 'orders.id', '=', 'payments.order_id')
             ->join('users', 'orders.user_id', '=', 'users.id')
-            ->when($this->specificPaymentId, function ($query) {
-                $query->where('payments.id', '=', $this->specificPaymentId);
+            ->when($this->paymentId, function ($query) {
+                $query->where('payments.id', '=', $this->paymentId);
             })
             ->when($this->search, function (Builder $query) {
                 $query->where(function ($query) {
