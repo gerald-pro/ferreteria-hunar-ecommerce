@@ -17,9 +17,4 @@
     </div>
 
     @livewire('payment-details')
-
-    @push('scripts')
-        @rappasoftTableScripts
-        @rappasoftTableThirdPartyScripts
-    @endpush
 </x-app-layout>

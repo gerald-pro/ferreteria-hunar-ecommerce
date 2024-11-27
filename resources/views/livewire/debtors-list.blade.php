@@ -22,7 +22,6 @@
                         @endif
                     </button>
                 </th>
-                <th class="px-4 py-2">CI/NIT</th>
                 <th class="px-4 py-2">
                     <button wire:click="sortBy('total_debt')">
                         Total Deuda
@@ -35,7 +34,7 @@
                         @endif
                     </button>
                 </th>
-                <th class="px-4 py-2">
+               {{--  <th class="px-4 py-2">
                     <button wire:click="sortBy('orders_count')">
                         Pedidos Pendientes
                         @if ($sortField === 'orders_count')
@@ -46,7 +45,7 @@
                             @endif
                         @endif
                     </button>
-                </th>
+                </th> --}}
                 <th class="px-4 py-2">Acciones</th>
             </tr>
         </thead>
@@ -54,9 +53,8 @@
             @foreach ($debtors as $debtor)
                 <tr>
                     <td class="border border-light px-4 py-2">{{ $debtor->name }}</td>
-                    <td class="border border-light px-4 py-2">{{ $debtor->billing_id }}</td>
                     <td class="border border-light px-4 py-2">{{ number_format($debtor->total_debt, 2) }} Bs</td>
-                    <td class="border border-light px-4 py-2">{{ $debtor->orders_count }}</td>
+                    {{-- <td class="border border-light px-4 py-2">{{ $debtor->orders_count }}</td> --}}
                     <td class="border border-light px-4 py-2">
                         <x-button wire:click="showDetail({{ $debtor->id }})" class="bg-blue-500 hover:bg-blue-700">
                             <x-spinner wire:loading wire:target="showDetail({{ $debtor->id }})" size="3" />
