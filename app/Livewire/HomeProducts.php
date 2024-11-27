@@ -42,6 +42,7 @@ class HomeProducts extends Component
         $categories = Category::all();
 
         $items = Product::with('promotions')
+            ->where('stock', '>', 0)
             ->when($this->search, function ($query) {
                 $query->where(function ($query) {
                     $query->where('name', 'ILIKE', '%' . $this->search . '%')

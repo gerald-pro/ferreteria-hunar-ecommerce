@@ -36,12 +36,12 @@ class DebtorsList extends Component
         $debtors = User::query()
             ->whereHas('orders', function ($query) {
                 $query->where(function ($query) {
-                    // Pedidos sin pagos registrados (considerados deudas completas)
-                    $query->doesntHave('payments')
-                        // Pedidos con pagos pendientes
-                        ->orWhereHas('payments', function ($query) {
-                            $query->where('status', 'PENDIENTE');
-                        });
+                    // Filtrar pedidos donde los pagos completados sean menores que el monto total
+                    $query->whereRaw('
+                (SELECT COALESCE(SUM(paid_amount), 0) 
+                 FROM payments 
+                 WHERE payments.order_id = orders.id AND payments.status = \'PAGADO\') < orders.total_amount
+            ');
                 });
             })
             ->when($this->search, function ($query) {
@@ -49,20 +49,22 @@ class DebtorsList extends Component
                     $query->where('name', 'ilike', '%' . $this->search . '%');
                 });
             })
-            ->withCount(['orders' => function ($query) {
+           /*  ->withCount(['orders' => function ($query) {
                 $query->where(function ($query) {
-                    $query->doesntHave('payments')
-                        ->orWhereHas('payments', function ($query) {
-                            $query->where('status', 'PENDIENTE');
-                        });
+                    $query->whereRaw('
+                (SELECT COALESCE(SUM(paid_amount), 0) 
+                 FROM payments 
+                 WHERE payments.order_id = orders.id AND payments.status = \'PAGADO\') < orders.total_amount
+            ');
                 });
-            }])
+            }]) */
             ->withSum(['orders as total_debt' => function ($query) {
                 $query->where(function ($query) {
-                    $query->doesntHave('payments')
-                        ->orWhereHas('payments', function ($query) {
-                            $query->where('status', 'PENDIENTE');
-                        });
+                    $query->whereRaw('
+                (SELECT COALESCE(SUM(paid_amount), 0) 
+                 FROM payments 
+                 WHERE payments.order_id = orders.id AND payments.status = \'PAGADO\') < orders.total_amount
+            ');
                 });
             }], 'total_amount')
             ->orderBy($this->sortField, $this->sortDirection)

@@ -28,10 +28,6 @@ class RegisterVisit
 
         $route = $request->getRequestUri();
 
-        if (strpos($route, 'rappasoft/laravel-livewire-tables') !== false) {
-            return $next($request);
-        }
-
         if (preg_match('/\.(js|css|png|jpg|gif|ico)$/', $route)) {
             return $next($request);
         }

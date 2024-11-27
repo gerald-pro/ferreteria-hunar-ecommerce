@@ -18,7 +18,7 @@ BEGIN
     -- Obtener el máximo ID de usuario
     SELECT MAX(id) INTO v_max_user_id FROM users;
 
-    FOR i IN 1..10000 LOOP
+    FOR i IN 1..1000 LOOP
         -- Seleccionar un usuario aleatorio
         v_user_id := floor(random() * v_max_user_id) + 1;
 

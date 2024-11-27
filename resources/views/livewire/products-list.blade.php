@@ -62,6 +62,18 @@
                         @endif
                     </button>
                 </th>
+                <th class="px-4 py-2">
+                    <button wire:click="sortBy('stock')">
+                        Stock
+                        @if ($sortField === 'stock')
+                            @if ($sortDirection === 'asc')
+                                ↑
+                            @else
+                                ↓
+                            @endif
+                        @endif
+                    </button>
+                </th>
                 <th class="px-4 py-2">Categoría</th>
                 <th class="px-4 py-2">Acciones</th>
             </tr>
@@ -78,6 +90,7 @@
                     </td>
                     <td class="border border-light px-4 py-2">{{ $product->name }}</td>
                     <td class="border border-light px-4 py-2">{{ number_format($product->price, 2) }} Bs</td>
+                    <td class="border border-light px-4 py-2">{{ $product->stock }} </td>
                     <td class="border border-light px-4 py-2">{{ $product->category->name }}</td>
                     <td class="border border-light px-4 py-2">
                         @can('product.edit')
@@ -123,7 +136,7 @@
                     </div>
                     <div class="mt-4">
                         <x-label for="price" value="Precio" />
-                        <x-input id="price" type="number" step="0.01" wire:model="price"
+                        <x-input id="price" type="number" step="0.01" wire:model="price" min="0.01"
                             class="mt-1 block w-full" required />
                         @error('price')
                             <span class="text-red-500">{{ $message }}</span>

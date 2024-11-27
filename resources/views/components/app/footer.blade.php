@@ -2,7 +2,7 @@
 
 @props([
     'showCopyright' => true,
-    'copyrightStart' => 2023,
+    'copyrightStart' => 2024,
 
     'showCredit' => true,
 
@@ -22,7 +22,8 @@
             <small class="text-sm">
                 Copyright &copy;
                 {{ $copyrightStart != date('Y') ? $copyrightStart . '-' . date('Y') : $copyrightStart }}
-                Gerald Avalos
+               {{--  Gerald Avalos --}}
+               Tecnología Web
             </small>
         </div>
     @endif

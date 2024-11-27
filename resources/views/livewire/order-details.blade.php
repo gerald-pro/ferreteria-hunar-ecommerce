@@ -22,7 +22,17 @@
                             </p>
                             <p><strong>Entrega:</strong> {{ $order->delivery_status }}</p>
                             <p><strong>Método de pago:</strong> {{ $order->payment_method }}</p>
-                            <p><strong>Pago:</strong> {{ $order->payment->status ?? 'PENDIENTE' }}</p>
+                            @php
+                                $totalPaid = $order->payments()->where('status', 'PAGADO')->sum('paid_amount');
+                            @endphp
+
+                            <p><strong>Pago:</strong> 
+                                @if ($totalPaid >= $order->total_amount)
+                                PAGADO
+                                @else
+                                PENDIENTE
+                                @endif
+                            </p>
                             <p><strong>Monto Total:</strong> {{ $order->total_amount }} Bs</p>
                         </div>
                     </div>
