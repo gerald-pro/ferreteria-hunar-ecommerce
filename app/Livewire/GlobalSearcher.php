@@ -6,10 +6,10 @@ use App\Models\Category;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Product;
+use App\Models\Role;
 use App\Models\SidebarItem;
 use App\Models\User;
 use Livewire\Component;
-use Spatie\Permission\Models\Role;
 use Spatie\Searchable\ModelSearchAspect;
 use Spatie\Searchable\Search;
 
@@ -40,7 +40,7 @@ class GlobalSearcher extends Component
                         $aspect->addExactSearchableAttribute('price');
                     })
                     ->registerModel(Payment::class, function (ModelSearchAspect $aspect) {
-                        $aspect->addExactSearchableAttribute('total_amount');
+                        $aspect->addExactSearchableAttribute('paid_amount');
                     })
                     ->registerModel(Order::class, function (ModelSearchAspect $aspect) {
                         $aspect->addExactSearchableAttribute('total_amount');

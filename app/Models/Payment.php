@@ -31,7 +31,7 @@ class Payment extends Model implements Searchable
 
         return new SearchResult(
             $this,
-            "Pago nro  {$this->id} (Bs. $this->total_amount)",
+            "Pago nro  {$this->id} (Bs. $this->paid_amount)",
             $url
         );
     }
